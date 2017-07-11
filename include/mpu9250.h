@@ -1,7 +1,7 @@
 #ifndef MPU9250_H
 #define MPU9250_H
 //Magnetometer Registers
-#define AK8963_ADDRESS   0x0C<<1
+#define AK8963_ADDRESS   0x0C
 #define AK8963_WHO_AM_I  0x00 // should return 0x48
 #define AK8963_INFO      0x01
 #define AK8963_ST1       0x02  // data ready status bit 0
@@ -153,28 +153,28 @@
 //ToDo: Check if this logic applies to nRF52 as mbed
 #define MPU9250_ADO 0
 #if MPU9250_ADO
-    #define MPU9250_ADDRESS 0x69<<1  // Device address when ADO = 1
+    #define MPU9250_ADDRESS 0x69  // Device address when ADO = 1
 #else
-    #define MPU9250_ADDRESS 0x68<<1  // Device address when ADO = 0
+    #define MPU9250_ADDRESS 0x68  // Device address when ADO = 0
 #endif
 // Set initial input parameters
 enum MPU9250_A_Scale {
-  AFS_2G = 0,
-  AFS_4G,
-  AFS_8G,
-  AFS_16G
+    AFS_2G = 0,
+    AFS_4G,
+    AFS_8G,
+    AFS_16G
 };
 
 enum MPU9250_G_Scale {
-  GFS_250DPS = 0,
-  GFS_500DPS,
-  GFS_1000DPS,
-  GFS_2000DPS
+    GFS_250DPS = 0,
+    GFS_500DPS,
+    GFS_1000DPS,
+    GFS_2000DPS
 };
 
 enum MPU9250_M_Scale {
-  MFS_14BITS = 0, // 0.6 mG per LSB
-  MFS_16BITS      // 0.15 mG per LSB
+    MFS_14BITS = 0, // 0.6 mG per LSB
+    MFS_16BITS      // 0.15 mG per LSB
 };
 
 uint8_t MPU9250_A_Scale = AFS_2G;     // AFS_2G, AFS_4G, AFS_8G, AFS_16G
@@ -185,7 +185,7 @@ float aRes, gRes, mRes;      // scale resolutions per LSB for the sensors
 
 extern void     MPU9250_writeByte   (uint8_t address, uint8_t subAddress, uint8_t data);
 extern char     MPU9250_readByte    (uint8_t address, uint8_t subAddress);
-extern void     MPU9250_readBytesPtr(uint8_t address, uint8_t subAddress, uint8_t count, uint8_t * dest);
+extern void     MPU9250_readBytes(uint8_t address, uint8_t subAddress, uint8_t count, uint8_t * dest);
 extern void     MPU9250_getMres();
 extern void     MPU9250_getGres();
 extern void     MPU9250_getAres();
@@ -193,10 +193,17 @@ extern void     MPU9250_readAccelData   (int16_t * destination);
 extern void     MPU9250_readGyroData    (int16_t * destination);
 extern void     MPU9250_readMagData     (int16_t * destination);
 extern int16_t  MPU9250_readTempData();
+extern void     MPU9250_updateTime();
 extern void     MPU9250_resetMPU9250();
 extern void     MPU9250_initAK8963      (float * destination);
 extern void     MPU9250_initMPU9250();
 extern void     MPU9250_calibrate(float * dest1, float * dest2);
 extern void     MPU9250_SelfTest(float * destination);
-extern void     MPU9250_MadgwickQuaternionUpdate(float ax, float ay, float az, float gx, float gy, float gz, float mx, float my, float mz);
+extern void     MPU9250_MadgwickQuaternionUpdate(
+                float ax, float ay, float az, float gx, float gy,
+                float gz, float mx, float my, float mz, float deltat);
+extern void     MPU9250_MahonyQuaternionUpdate(
+                float ax, float ay, float az, float gx, float gy,
+                float gz, float mx, float my, float mz, float deltat);
+extern const float * MPU9250_getQ();
 #endif
